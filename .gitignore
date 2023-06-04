@@ -1,0 +1,6 @@
+.env
+radarr/
+plex/
+sonarr/
+transmission/
+jackett/

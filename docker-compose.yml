@@ -1,0 +1,108 @@
+version: "3.8"
+
+services:
+  transmission-openvpn:
+    container_name: transmission-openvpn
+    image: haugene/transmission-openvpn:latest
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./transmission:/config
+      - ${MEDIA_ROOT}/downloads:/data
+    networks:
+      - internal_network
+    ports:
+      - "9091:9091"
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - OPENVPN_PROVIDER=${OPENVPN_PROVIDER}
+      - OPENVPN_USERNAME=${OPENVPN_USERNAME}
+      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+      - OPENVPN_CONFIG=${OPENVPN_CONFIG}
+      - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
+      - TRANSMISSION_RATIO_LIMIT=0
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=0
+
+  jackett:
+    container_name: jackett
+    image: linuxserver/jackett:latest
+    restart: unless-stopped
+    networks:
+      - internal_network
+    ports:
+      - "9117:9117"
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./jackett:/config
+
+  sonarr:
+    container_name: sonarr
+    image: linuxserver/sonarr:latest
+    restart: unless-stopped
+    networks:
+      - nginx_network
+      - internal_network
+    ports:
+      - "8989:8989"
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - VIRTUAL_HOST=${SONARR_HOSTNAME}
+      - LETSENCRYPT_HOST=${SONARR_HOSTNAME}
+      - VIRTUAL_PORT=8989
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./sonarr:/config
+      - ${MEDIA_ROOT}/complete/tv:/tv
+      - ${MEDIA_ROOT}/downloads:/data
+
+  radarr:
+    container_name: radarr
+    image: linuxserver/radarr:latest
+    restart: unless-stopped
+    networks:
+      - nginx_network
+      - internal_network
+    ports:
+      - "7878:7878"
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - VIRTUAL_HOST=${RADARR_HOSTNAME}
+      - LETSENCRYPT_HOST=${RADARR_HOSTNAME}
+      - VIRTUAL_PORT=7878
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./radarr:/config
+      - ${MEDIA_ROOT}/complete/movies:/movies
+      - ${MEDIA_ROOT}/downloads:/data
+
+  plex:
+    container_name: plex
+    image: plexinc/pms-docker:latest
+    restart: unless-stopped
+    ports:
+      - "32400:32400"
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ./plex:/config
+      - ./plex/transcode:/transcode
+      - ${MEDIA_ROOT}/complete:/data
+
+networks:
+  internal_network:
+  nginx_network:
+    external: true
