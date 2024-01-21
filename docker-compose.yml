@@ -29,21 +29,20 @@ services:
     sysctls:
       - net.ipv6.conf.all.disable_ipv6=0
 
-  jackett:
-    container_name: jackett
-    image: linuxserver/jackett:latest
+  prowlarr:
+    container_name: prowlarr
+    image: lscr.io/linuxserver/prowlarr:latest
     restart: unless-stopped
-    networks:
-      - internal_network
-    ports:
-      - "9117:9117"
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ./jackett:/config
+      - ./prowlarr:/config
+    networks:
+      - internal_network
+    ports:
+      - "9696:9696"
 
   sonarr:
     container_name: sonarr
