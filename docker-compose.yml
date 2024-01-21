@@ -93,6 +93,8 @@ services:
     container_name: plex
     image: plexinc/pms-docker:latest
     restart: unless-stopped
+    networks:
+      - internal_network
     ports:
       - "32400:32400"
     environment:
