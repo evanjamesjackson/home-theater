@@ -1,52 +1,25 @@
 version: "3.8"
-
 services:
-  transmission-openvpn:
-    container_name: transmission-openvpn
-    image: haugene/transmission-openvpn:latest
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun
+  plex:
+    container_name: plex
+    image: linuxserver/plex
     restart: unless-stopped
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ./transmission:/config
-      - ${MEDIA_ROOT}/downloads:/data
     networks:
       - internal_network
     ports:
-      - "9091:9091"
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - OPENVPN_PROVIDER=${OPENVPN_PROVIDER}
-      - OPENVPN_USERNAME=${OPENVPN_USERNAME}
-      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
-      - OPENVPN_CONFIG=${OPENVPN_CONFIG}
-      - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
-      - TRANSMISSION_RATIO_LIMIT=0
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=0
-
-  prowlarr:
-    container_name: prowlarr
-    image: lscr.io/linuxserver/prowlarr:latest
-    restart: unless-stopped
+      - "32400:32400"
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - ./prowlarr:/config
-    networks:
-      - internal_network
-    ports:
-      - "9696:9696"
+      - ./plex:/config
+      - ./plex/transcode:/transcode
+      - ${MEDIA_ROOT}/complete:/data
 
   sonarr:
     container_name: sonarr
-    image: linuxserver/sonarr:latest
+    image: linuxserver/sonarr
     restart: unless-stopped
     networks:
       - nginx_network
@@ -61,14 +34,14 @@ services:
       - LETSENCRYPT_HOST=${SONARR_HOSTNAME}
       - VIRTUAL_PORT=8989
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./sonarr:/config
       - ${MEDIA_ROOT}/complete/tv:/tv
-      - ${MEDIA_ROOT}/downloads:/data
+      - ${MEDIA_ROOT}/data:/data
+      - /etc/localtime:/etc/localtime:ro
 
   radarr:
     container_name: radarr
-    image: linuxserver/radarr:latest
+    image: linuxserver/radarr
     restart: unless-stopped
     networks:
       - nginx_network
@@ -83,25 +56,42 @@ services:
       - LETSENCRYPT_HOST=${RADARR_HOSTNAME}
       - VIRTUAL_PORT=7878
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./radarr:/config
       - ${MEDIA_ROOT}/complete/movies:/movies
-      - ${MEDIA_ROOT}/downloads:/data
+      - ${MEDIA_ROOT}/data:/data
+      - /etc/localtime:/etc/localtime:ro
 
-  plex:
-    container_name: plex
-    image: plexinc/pms-docker:latest
+  qbittorrent:
+    container_name: qbittorrent
+    image: linuxserver/qbittorrent
     restart: unless-stopped
     networks:
       - internal_network
     ports:
-      - "32400:32400"
+      - "9091:9091/tcp"
     environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=9091
+    volumes:
+      - ./qbittorrent:/config
+      - ${MEDIA_ROOT}/data/downloads:/data/downloads
+
+  prowlarr:
+    container_name: prowlarr
+    image: linuxserver/prowlarr
+    restart: unless-stopped
+    networks:
+      - internal_network
+    ports:
+      - "9696:9696"
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - ./plex:/config
-      - ./plex/transcode:/transcode
-      - ${MEDIA_ROOT}/complete:/data
+      - ./prowlarr:/config
 
 networks:
   internal_network:
