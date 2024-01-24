@@ -30,6 +30,7 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      # nginx-proxy variables
       - VIRTUAL_HOST=${SONARR_HOSTNAME}
       - LETSENCRYPT_HOST=${SONARR_HOSTNAME}
       - VIRTUAL_PORT=8989
@@ -52,6 +53,7 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      # nginx-proxy variables
       - VIRTUAL_HOST=${RADARR_HOSTNAME}
       - LETSENCRYPT_HOST=${RADARR_HOSTNAME}
       - VIRTUAL_PORT=7878
@@ -61,27 +63,10 @@ services:
       - ${MEDIA_ROOT}/data:/data
       - /etc/localtime:/etc/localtime:ro
 
-  qbittorrent:
-    container_name: qbittorrent
-    image: linuxserver/qbittorrent
-    restart: unless-stopped
-    networks:
-      - internal_network
-    ports:
-      - "9091:9091/tcp"
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - WEBUI_PORT=9091
-    volumes:
-      - ./qbittorrent:/config
-      - ${MEDIA_ROOT}/data/downloads:/data/downloads
-
   prowlarr:
     container_name: prowlarr
     image: linuxserver/prowlarr
-    restart: unless-stopped
+    restart: always
     networks:
       - internal_network
     ports:
@@ -92,6 +77,44 @@ services:
       - TZ=${TZ}
     volumes:
       - ./prowlarr:/config
+
+  qbittorrent:
+    container_name: qbittorrent
+    # There is currently an issue that prevents the latest-tagged image from working with gluetun: https://github.com/qdm12/gluetun/discussions/1562
+    image: lscr.io/linuxserver/qbittorrent:libtorrentv1
+    restart: unless-stopped
+    depends_on:
+      - qbittorrent-vpn
+    # Place this container inside the VPN container's network so that all traffic is routed through it
+    network_mode: "service:qbittorrent-vpn"
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=9091
+    volumes:
+      - ./qbittorrent:/config
+      - ${MEDIA_ROOT}/data/downloads:/data/downloads
+
+  qbittorrent-vpn:
+    container_name: qbittorrent-vpn
+    image: qmcgaw/gluetun
+    restart: unless-stopped
+    networks:
+      - internal_network
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      # Open the qBittorrent port
+      - "9091:9091"
+    environment:
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=wireguard
+    volumes:
+      # Wireguard conf file must be located at /gluetun/wireguard/wg0.conf
+      - ./qbittorrent-vpn:/gluetun
 
 networks:
   internal_network:

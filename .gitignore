@@ -3,4 +3,5 @@ radarr/
 plex/
 sonarr/
 prowlarr/
-qbittorrent
+qbittorrent/
+qbittorrent-vpn/
