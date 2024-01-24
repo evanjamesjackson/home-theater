@@ -107,11 +107,12 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     ports:
-      # Open the qBittorrent port
+      # Open the qBittorrent WebUI port
       - "9091:9091"
     environment:
       - VPN_SERVICE_PROVIDER=custom
       - VPN_TYPE=wireguard
+      - TZ=${TZ}
     volumes:
       # Wireguard conf file must be located at /gluetun/wireguard/wg0.conf
       - ./qbittorrent-vpn:/gluetun
