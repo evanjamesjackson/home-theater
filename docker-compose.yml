@@ -6,7 +6,7 @@ services:
     networks:
       - internal_network
     ports:
-      - "32400:32400"
+      - "${PLEX_PORT}:32400"
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -21,10 +21,8 @@ services:
     image: linuxserver/sonarr
     restart: unless-stopped
     networks:
-      - nginx_network
+      - nginx_proxy_network
       - internal_network
-    ports:
-      - "8989:8989"
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -44,10 +42,8 @@ services:
     image: linuxserver/radarr
     restart: unless-stopped
     networks:
-      - nginx_network
+      - nginx_proxy_network
       - internal_network
-    ports:
-      - "7878:7878"
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -69,7 +65,7 @@ services:
     networks:
       - internal_network
     ports:
-      - "9696:9696"
+      - "${PROWLARR_PORT}:9696"
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -107,7 +103,7 @@ services:
       - /dev/net/tun:/dev/net/tun
     ports:
       # Open the qBittorrent WebUI port
-      - "9091:9091"
+      - "${QBITTORRENT_PORT}:9091"
     environment:
       - VPN_SERVICE_PROVIDER=custom
       - VPN_TYPE=wireguard
@@ -126,5 +122,6 @@ volumes:
 
 networks:
   internal_network:
-  nginx_network:
+  nginx_proxy_network:
+    name: ${NGINX_PROXY_NETWORK}
     external: true
