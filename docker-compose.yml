@@ -12,8 +12,8 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - ./plex:/config
-      - ./plex/transcode:/transcode
+      - plex_config:/config
+      - plex_transcode:/transcode
       - ${MEDIA_ROOT}/complete:/data
 
   sonarr:
@@ -34,7 +34,7 @@ services:
       - LETSENCRYPT_HOST=${SONARR_HOSTNAME}
       - VIRTUAL_PORT=8989
     volumes:
-      - ./sonarr:/config
+      - sonarr_config:/config
       - ${MEDIA_ROOT}/complete/tv:/tv
       - ${MEDIA_ROOT}/data:/data
       - /etc/localtime:/etc/localtime:ro
@@ -57,7 +57,7 @@ services:
       - LETSENCRYPT_HOST=${RADARR_HOSTNAME}
       - VIRTUAL_PORT=7878
     volumes:
-      - ./radarr:/config
+      - radarr_config:/config
       - ${MEDIA_ROOT}/complete/movies:/movies
       - ${MEDIA_ROOT}/data:/data
       - /etc/localtime:/etc/localtime:ro
@@ -75,7 +75,7 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - ./prowlarr:/config
+      - prowlarr_config:/config
 
   qbittorrent:
     container_name: qbittorrent
@@ -92,7 +92,7 @@ services:
       - TZ=${TZ}
       - WEBUI_PORT=9091
     volumes:
-      - ./qbittorrent:/config
+      - qbittorrent_config:/config
       - ${MEDIA_ROOT}/data/downloads:/data/downloads
 
   qbittorrent-vpn:
@@ -115,6 +115,14 @@ services:
     volumes:
       # Wireguard conf file must be located at /gluetun/wireguard/wg0.conf
       - ./qbittorrent-vpn:/gluetun
+
+volumes:
+  plex_config:
+  plex_transcode:
+  sonarr_config:
+  radarr_config:
+  prowlarr_config:
+  qbittorrent_config:
 
 networks:
   internal_network:
