@@ -91,6 +91,18 @@ services:
       - qbittorrent_config:/config
       - ${MEDIA_ROOT}/data/downloads:/data/downloads
 
+  # Stolen from https://github.com/qdm12/gluetun/discussions/1562#discussioncomment-9758565
+  qbittorrent-restarter:
+    container_name: qbittorrent-restarter
+    image: docker:cli
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    # Restart the qBitTorrent container every 10 minutes
+    command: ["/bin/sh", "-ex", "-c", "while true; do sleep 600; echo restarting; docker restart qbittorrent; done"]
+    restart: unless-stopped
+    depends_on:
+      - qbittorrent
+
   qbittorrent-vpn:
     container_name: qbittorrent-vpn
     image: qmcgaw/gluetun
