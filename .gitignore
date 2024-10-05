@@ -1,7 +1,2 @@
 .env
-radarr/
-plex/
-sonarr/
-prowlarr/
-qbittorrent/
-qbittorrent-vpn/
+wg0.conf

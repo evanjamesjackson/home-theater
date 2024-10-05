@@ -86,7 +86,7 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-      - WEBUI_PORT=9091
+      - WEBUI_PORT=${QBITTORRENT_PORT}
     volumes:
       - qbittorrent_config:/config
       - ${MEDIA_ROOT}/data/downloads:/data/downloads
@@ -103,14 +103,13 @@ services:
       - /dev/net/tun:/dev/net/tun
     ports:
       # Open the qBittorrent WebUI port
-      - "${QBITTORRENT_PORT}:9091"
+      - "${QBITTORRENT_PORT}:${QBITTORRENT_PORT}"
     environment:
       - VPN_SERVICE_PROVIDER=custom
       - VPN_TYPE=wireguard
       - TZ=${TZ}
     volumes:
-      # Wireguard conf file must be located at /gluetun/wireguard/wg0.conf
-      - ./qbittorrent-vpn:/gluetun
+      - ./wg0.conf:/gluetun/wireguard/wg0.conf
 
 volumes:
   plex_config:
