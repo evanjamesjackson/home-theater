@@ -73,6 +73,23 @@ services:
     volumes:
       - prowlarr_config:/config
 
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    restart: always
+    networks:
+      - internal_network
+    ports:
+      - "${BAZARR_PORT}:6767"
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - bazarr_config:/config
+      - ${MEDIA_ROOT}/complete/movies:/movies
+      - ${MEDIA_ROOT}/complete/tv:/tv
+
   qbittorrent:
     container_name: qbittorrent
     # There is currently an issue that prevents the latest-tagged image from working with gluetun: https://github.com/qdm12/gluetun/discussions/1562
@@ -129,6 +146,7 @@ volumes:
   sonarr_config:
   radarr_config:
   prowlarr_config:
+  bazarr_config:
   qbittorrent_config:
 
 networks:
