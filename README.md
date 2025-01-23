@@ -1,5 +1,5 @@
 ### Prerequesites
-Depends on a running instance of nginx-proxy in order to expose `radarr` and `sonarr`.
+Requires Docker. Depends on a running instance of [nginx-proxy](https://github.com/nginx-proxy/nginx-proxy) in order to expose `radarr` and `sonarr` to the Internet (remove any configuration related to this if you don't wish to expose these services outside of your network).
 
 ### Initial setup
 Copy `.env.stub` to `.env` and update the values. Set `SONARR_HOSTNAME` and `RADARR_HOSTNAME` to domains that you own and wish to be accessible on the Internet (you will obviously need to own these domains and have them pointing to your server). 'Set `PUID` and `PGID` to the values of a user you wish to own and manage the configuration and data files. Set `MEDIA_ROOT` to the directory where you want your media to be stored, and ensure that it is owned by the aforementioned user. Set the `PORT` variables to the ports to expose for Plex, Prowlarr and qBitTorrent. 
