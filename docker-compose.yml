@@ -11,6 +11,7 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      - PLEX_CLAIM=${PLEX_CLAIM}
     volumes:
       - plex_config:/config
       - plex_transcode:/transcode
