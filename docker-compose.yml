@@ -35,7 +35,7 @@ services:
     volumes:
       - sonarr_config:/config
       - ${MEDIA_ROOT}/complete/tv:/tv
-      - ${MEDIA_ROOT}/data:/data
+      - ${MEDIA_ROOT}/downloads:/downloads
       - /etc/localtime:/etc/localtime:ro
 
   radarr:
@@ -56,7 +56,7 @@ services:
     volumes:
       - radarr_config:/config
       - ${MEDIA_ROOT}/complete/movies:/movies
-      - ${MEDIA_ROOT}/data:/data
+      - ${MEDIA_ROOT}/downloads:/downloads
       - /etc/localtime:/etc/localtime:ro
 
   prowlarr:
@@ -107,7 +107,7 @@ services:
       - WEBUI_PORT=${QBITTORRENT_PORT}
     volumes:
       - qbittorrent_config:/config
-      - ${MEDIA_ROOT}/data/downloads:/data/downloads
+      - ${MEDIA_ROOT}/downloads:/downloads
 
   # Stolen from https://github.com/qdm12/gluetun/discussions/1562#discussioncomment-9758565
   qbittorrent-restarter:
