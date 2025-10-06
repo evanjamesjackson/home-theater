@@ -24,6 +24,8 @@ services:
     networks:
       - nginx_proxy_network
       - internal_network
+    ports:
+      - "${SONARR_PORT}:8989"
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -45,6 +47,8 @@ services:
     networks:
       - nginx_proxy_network
       - internal_network
+    ports:
+      - "${RADARR_PORT}:7878"
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
