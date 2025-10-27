@@ -97,8 +97,7 @@ services:
 
   qbittorrent:
     container_name: qbittorrent
-    # There is currently an issue that prevents the latest-tagged image from working with gluetun: https://github.com/qdm12/gluetun/discussions/1562
-    image: lscr.io/linuxserver/qbittorrent:libtorrentv1
+    image: lscr.io/linuxserver/qbittorrent
     restart: unless-stopped
     depends_on:
       - qbittorrent-vpn
@@ -127,7 +126,6 @@ services:
       # Open the qBittorrent WebUI port
       - "${QBITTORRENT_PORT}:${QBITTORRENT_PORT}"
     environment:
-      - VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c 'wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{PORTS}}}" http://127.0.0.1:8181/api/v2/app/setPreferences 2>&1'
       - VPN_SERVICE_PROVIDER=custom
       - VPN_TYPE=wireguard
       - TZ=${TZ}
