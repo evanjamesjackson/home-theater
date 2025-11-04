@@ -132,6 +132,18 @@ services:
     volumes:
       - ./wg0.conf:/gluetun/wireguard/wg0.conf
 
+  # Stolen from https://github.com/qdm12/gluetun/discussions/1562#discussioncomment-9758565
+  qbitorrent-vpn-restarter:
+    container_name: qbitorrent-vpn-restarter
+    image: docker:cli
+    restart: unless-stopped
+    depends_on:
+      - qbittorrent
+    # Restart VPN every 12 hours
+    command: ["/bin/sh", "-ex", "-c", "while true; do sleep 43200; echo restarting; docker restart qbittorrent; done"]
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
 volumes:
   plex_config:
   plex_transcode:
