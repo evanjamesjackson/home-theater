@@ -78,6 +78,21 @@ services:
     volumes:
       - prowlarr_config:/config
 
+  flaresolverr:
+    container_name: flaresolverr
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    restart: always
+    networks:
+      - internal_network
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_FILE=${LOG_FILE:-none}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=${TZ}
+    volumes:
+      - flaresolverr_config:/config
+
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
@@ -150,6 +165,7 @@ volumes:
   sonarr_config:
   radarr_config:
   prowlarr_config:
+  flaresolverr_config:
   bazarr_config:
   qbittorrent_config:
 
