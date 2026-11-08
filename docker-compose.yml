@@ -144,6 +144,8 @@ services:
       - VPN_SERVICE_PROVIDER=custom
       - VPN_TYPE=wireguard
       - TZ=${TZ}
+      - DNS_UPSTREAM_RESOLVER_TYPE=plain
+      - DNS_UPSTREAM_PLAIN_ADDRESSES=9.9.9.9:53
     volumes:
       - ./wg0.conf:/gluetun/wireguard/wg0.conf
 
