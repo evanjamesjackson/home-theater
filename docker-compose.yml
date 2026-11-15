@@ -150,8 +150,8 @@ services:
       - ./wg0.conf:/gluetun/wireguard/wg0.conf
 
   # Stolen from https://github.com/qdm12/gluetun/discussions/1562#discussioncomment-9758565
-  qbitorrent-vpn-restarter:
-    container_name: qbitorrent-vpn-restarter
+  qbittorrent-vpn-restarter:
+    container_name: qbittorrent-vpn-restarter
     image: docker:cli
     restart: unless-stopped
     depends_on:
